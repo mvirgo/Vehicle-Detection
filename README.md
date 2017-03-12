@@ -1,5 +1,5 @@
 # Vehicle-Detection
-Detecting Vehicles for Udacity CarND Term 1 Project 5
+####Detecting Vehicles for Udacity CarND Term 1 Project 5
 
 In this project, I use histograms of oriented gradients (HOGs) and color features, along with a linear support vector machine classifier, in order to detect vehicles in a road video. I use multiple scales of the image classifiers in order to potentially detect vehicles at different distances. To help smooth out multiple detections of the same vehicle and remove false positives, I utilize heat maps to create bounding boxes on the areas with the most detections occuring. 
 
