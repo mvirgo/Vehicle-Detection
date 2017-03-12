@@ -47,11 +47,11 @@ My final pipeline searched on four scales using the YCrCb 3-channel HOG features
 
 My project video file was created using the 'video_function_with_lanes.py' file. Note that it contains both vehicle detection and lane line detection. The first video, specific to this project, was made by commenting out the lane line detection portion.
 
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result.](./project_videos/project_vid_output.mp4)
 
 This first video is the result of the full detection pipeline, which also utilizes heat maps as I'll describe more below. It does a fairly decent job, with only a few small pop-ups to the left (one of which actually is a car on the other side of the road, so not actually a false positive), and only a few times where it stops detecting one of the vehicles.
 
-In this second video [link guy], I also added in my lane line detection from my Advanced Lane Lines project here[link guy 2]. Note that the 'cam_calibration.py' file helps calibrate the camera for this (using chessboard images from Udacity's Advanced Lane Lines repo as listed in that file), for which I saved the necessary undistortion information to the 'cam_cal_info.p' file in this repository. This gets fed into the 'lane_detect.py' file, which is then pulled into the 'video_function_with_lanes.py' file.
+In this [second video](./project_videos/project_vid_output_with_lanes.mp4), I also added in my lane line detection from my Advanced Lane Lines [project here](https://github.com/mvirgo/Advanced-Lane-Lines). Note that the 'cam_calibration.py' file helps calibrate the camera for this (using chessboard images from Udacity's Advanced Lane Lines repo as listed in that file), for which I saved the necessary undistortion information to the 'cam_cal_info.p' file in this repository. This gets fed into the 'lane_detect.py' file, which is then pulled into the 'video_function_with_lanes.py' file.
 
 ####Heatmaps
 
