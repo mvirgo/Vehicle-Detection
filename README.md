@@ -33,13 +33,15 @@ Next, I shuffled and split the data into training and test splits using function
 
 ####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
-I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
+My sliding window search is implemented in lines 54-111 in 'full_detection_pipeline.py'. For each scale input (from Line 28 in the same file), it will extract the HOG features from each color channel in the 'YCrCb' color space. Based on the window size input, it will slowly "step" across the image (based on pixels in a cell and the number of those cells in a step), with each window being run through the classifier to determine whether it is predicted as a vehicle or non-vehicle. Note that my implementation also puts in the spatial features and color histogram features along with the HOG features (Lines 100 & 101 of full_detection_pipeline.py).
 
-![alt text][image3]
+I set the y-start and y-stop to be '400' and 'None', meaning that a little bit over the top half of the image is not searched, but from there it is searched to the bottom of the image. This is because a car would not be expected to be above the horizon line.
 
-####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
+I settled on two for cells_per_step (which affects how much the windows overlap), as going higher tended to cause issues later with my heat map, as the windows were less often on top of each other and therefore not causing my heat map to meet the desired threshold.
 
-Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
+As far as scales go, I went with scales larger than the training images had been, which were 64 pixels by 64 pixels. Most of the cars near enough to matter are going to be larger than that, so I went with multiple scales from 1.1 on up to 2.3, spread out by 0.4 each to get some variety. This did a good job of having multiple hits on the actual vehicles, while not having very many overlapping false positives.
+
+My final pipeline searched on four scales using the YCrCb 3-channel HOG features, plus spatially binned color and histograms of color in the feature vector, which provided a sufficient result.  Here are some example images, which are prior to using heatmaps:
 
 ![alt text][image4]
 
