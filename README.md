@@ -51,7 +51,7 @@ Here's a [link to my video result.](./project_videos/project_vid_output.mp4)
 
 This first video is the result of the full detection pipeline, which also utilizes heat maps as I'll describe more below. It does a fairly decent job, with only a few small pop-ups to the left (one of which actually is a car on the other side of the road, so not actually a false positive), and only a few times where it stops detecting one of the vehicles.
 
-In this [second video](./project_videos/project_vid_output_with_lanes.mp4), I also added in my lane line detection from my Advanced Lane Lines [project here](https://github.com/mvirgo/Advanced-Lane-Lines). Note that the 'cam_calibration.py' file helps calibrate the camera for this (using chessboard images from Udacity's Advanced Lane Lines repo as listed in that file), for which I saved the necessary undistortion information to the 'cam_cal_info.p' file in this repository. This gets fed into the 'lane_detect.py' file, which is then pulled into the 'video_function_with_lanes.py' file.
+In this [second video](./project_videos/project_vid_output_with_lanes.mp4), I also added in my lane line detection from my Advanced Lane Lines [project here](https://github.com/mvirgo/Advanced-Lane-Lines). Note that the 'cam_calibration.py' file helps calibrate the camera for this (using chessboard images from Udacity's Advanced Lane Lines repo as listed in that file), for which I saved the necessary undistortion information to the 'cam_cal_info.p' file in this repository. This gets fed into the 'lane_detect.py' file, which is then pulled into the 'video_function_with_lanes.py' file. This second video runs into an interesting issue after running seamlessly to start, where the lane detection fails in the last 15 seconds or so, likely due to my current implementation running the lane detection after the vehicle detection (and the bounding boxes messing with the lane line detection).
 
 ####Heatmaps
 
@@ -89,7 +89,7 @@ My model does still have a few moments where it detects false positives or stops
 
 As seen above, if I want to detect vehicles and lanes at the same time, I could probably retool my functions to either run more in parallel or otherwise not draw the vehicle detections onto the image until already pulling the lane line detection as well. This would prevent the issue late in the combined video where the lane line detection fails.
 
-Another area of potential vast improvement is with regards to speed. My current implementation is much, much slower than real time (taking nearly 50 minutes to produce the 1.5 minute project video). 
+Another area of potential vast improvement is with regards to speed. My current implementation is much, much slower than real time (taking nearly 50 minutes to produce the less than one minute project video). 
 
 Lastly, I think deep learning would be another approach (especially since the training data is of a sufficient size), or potentially using other classifier algorithms to see how they fare compare to a Linear SVC.
 
