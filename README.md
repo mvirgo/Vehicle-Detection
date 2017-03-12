@@ -31,8 +31,6 @@ Next, I shuffled and split the data into training and test splits using function
 
 ###Sliding Window Search
 
-####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
-
 My sliding window search is implemented in lines 54-111 in 'full_detection_pipeline.py'. For each scale input (from Line 28 in the same file), it will extract the HOG features from each color channel in the 'YCrCb' color space. Based on the window size input, it will slowly "step" across the image (based on pixels in a cell and the number of those cells in a step), with each window being run through the classifier to determine whether it is predicted as a vehicle or non-vehicle. Note that my implementation also puts in the spatial features and color histogram features along with the HOG features (Lines 100 & 101 of full_detection_pipeline.py).
 
 I set the y-start and y-stop to be '400' and 'None', meaning that a little bit over the top half of the image is not searched, but from there it is searched to the bottom of the image. This is because a car would not be expected to be above the horizon line.
@@ -47,27 +45,31 @@ My final pipeline searched on four scales using the YCrCb 3-channel HOG features
 
 ### Video Implementation
 
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
+My project video file was created using the 'video_function_with_lanes.py' file. Note that it contains both vehicle detection and lane line detection. The first video, specific to this project, was made by commenting out the lane line detection portion.
+
 Here's a [link to my video result](./project_video.mp4)
 
+This first video is the result of the full detection pipeline, which also utilizes heat maps as I'll describe more below. It does a fairly decent job, with only a few small pop-ups to the left (one of which actually is a car on the other side of the road, so not actually a false positive), and only a few times where it stops detecting one of the vehicles.
 
-####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
+In this second video [link guy], I also added in my lane line detection from my Advanced Lane Lines project here[link guy 2]. Note that the 'cam_calibration.py' file helps calibrate the camera for this (using chessboard images from Udacity's Advanced Lane Lines repo as listed in that file), for which I saved the necessary undistortion information to the 'cam_cal_info.p' file in this repository. This gets fed into the 'lane_detect.py' file, which is then pulled into the 'video_function_with_lanes.py' file.
 
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
+####Heatmaps
 
-Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
+The 'heatmap_functions.py' file and Lines 113-129 of 'full_detection_pipeline.py' implement my heat maps.
 
-### Here are six frames and their corresponding heatmaps:
+In order to create the heat maps, for each box detected for an image/frame of video, these these box positions are recorded such that the areas within are given a certain amount of "heat", whereby more "heat" means there were more detections in that spot. After applying a threshold, only certain higher amounts of heat are left to eliminate some of the false positives. I then used 'scipy.ndimage.measurements.label()' to identify individual heat blobs in the heatmap.  From there, the individual heat blobs are assumed to be vehicles, and bounding boxes are made to cover the area of each of these heat blobs.
+
+Here's an example result showing the heatmap from a series of images, the result of 'scipy.ndimage.measurements.label()' and the bounding boxes then overlaid onto the images:
+
+#### Here are six frames and their corresponding heatmaps:
 
 ![alt text][image5]
 
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
+#### Here is the output of 'scipy.ndimage.measurements.label()' on the integrated heatmap from all six frames:
 ![alt text][image6]
 
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
+#### Here the resulting bounding boxes are drawn onto the last frame in the series:
 ![alt text][image7]
-
-
 
 ---
 
