@@ -1,32 +1,33 @@
 # Vehicle-Detection
 Detecting Vehicles for Udacity CarND Term 1 Project 5
 
-In this project, I use histograms of oriented gradients (HOGs), along with a linear support vector machine classifier, in order to detect vehicles in a road video. I use multiple scales of the image classifiers in order to potentially detect vehicles at different distances. To help smooth out multiple detections of the same vehicle and remove false positives, I utilize heat maps to create bounding boxes on the areas with the most detections occuring. 
+In this project, I use histograms of oriented gradients (HOGs) and color features, along with a linear support vector machine classifier, in order to detect vehicles in a road video. I use multiple scales of the image classifiers in order to potentially detect vehicles at different distances. To help smooth out multiple detections of the same vehicle and remove false positives, I utilize heat maps to create bounding boxes on the areas with the most detections occuring. 
 
 ###Histogram of Oriented Gradients (HOG)
 
-####1. Explain how (and identify where in your code) you extracted HOG features from the training images.
+The code for this step is contained in the detect_functions.py file, and the parameters fed into the HOG can be found in the vehicle_classifier.py file, lines 34-45. After training the classifier, I saved the parameters into a pickle file (found at classifier_info.p) to bring into my main pipeline.
 
-The code for this step is contained in the first code cell of the IPython notebook (or in lines # through # of the file called `some_file.py`).  
-
-I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
+I started by reading in all the 'vehicle' and 'non-vehicle' images.  Here is an example of one of each of the 'vehicle' and 'non-vehicle' classes:
 
 ![alt text][image1]
 
-I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
+I then explored different color spaces and different 'skimage.hog()' parameters ('orientations', 'pixels_per_cell', and 'cells_per_block').  I grabbed random images from each of the two classes and displayed them to get a feel for what the 'skimage.hog()' output looks like.
 
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
-
+Here is an example using the 'YCrCb' color space and HOG parameters of 'orientations=9', 'pixels_per_cell=8' and 'cells_per_block=2':
 
 ![alt text][image2]
 
-####2. Explain how you settled on your final choice of HOG parameters.
+I tried various combinations of parameters, originally staying with RGB for color space, as in the images I looked at originally before the classifier, the color space did not appear to have a big effect. However, I found I gained over an additional percentage of test accuracy (from just over 97% to ~99%) on my SVC classifier by using the 'YCrCb' color space.
 
-I tried various combinations of parameters and...
+I also found that 'orientations' of below 7 did not do a good job at vehicle detection, but those above it did. I settled at 9 orientations based on classifier performance.
 
-####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
+For pixels per cell and cells per block, I also tried a few different combinations (less or more), and found 8 pixels per cell and 2 cells per block to have the best performance.
 
-I trained a linear SVM using...
+Given that I also used color features, I played around with the number of histogram bins and spatial dimensions. On a small dataset, more histogram bins and less spatial dimensions than my final seemed to perform better, but once I expanded to the full dataset, I found that 16 histogram bins and (16, 16) for spatial dimensions maximized accuracy.
+
+Now, onto the training of a classifier. In lines 47-58 of vehicle_classifier.py, I extract the features from 'vehicle' and 'non-vehicle' using the above parameters, and then use lines 60-69 of the same file to create 'X' from the extracted features, scale it (using StandardScaler from sklearn), and then create labels for 'y' by labelling all vehicles as '1' and all non-vehicles as '0'.
+
+Next, I shuffled and split the data into training and test splits using functions from sklearn. I then used sklearn's LinearSVC (a linear support vector machine classifier) to train my classifier. I saved the classifier, X_scaler, and parameter information to the pickle file 'classifier_info.p' to use in my sliding window search coming up below. This classifier had a test accuracy of 98.99%.
 
 ###Sliding Window Search
 
