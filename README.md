@@ -9,13 +9,13 @@ The code for this step is contained in the detect_functions.py file, and the par
 
 I started by reading in all the 'vehicle' and 'non-vehicle' images.  Here is an example of one of each of the 'vehicle' and 'non-vehicle' classes:
 
-![alt text][image1]
+![Vehicle and Non-Vehicle](./images/vehicle_nonvehicle_example.PNG "Vehicle and Non-Vehicle Example")
 
 I then explored different color spaces and different 'skimage.hog()' parameters ('orientations', 'pixels_per_cell', and 'cells_per_block').  I grabbed random images from each of the two classes and displayed them to get a feel for what the 'skimage.hog()' output looks like.
 
-Here is an example using the 'YCrCb' color space and HOG parameters of 'orientations=9', 'pixels_per_cell=8' and 'cells_per_block=2':
+Here is an example using HOG parameters of 'orientations=9', 'pixels_per_cell=8' and 'cells_per_block=2':
 
-![alt text][image2]
+![HOG](./images/HOG_example.PNG "HOG Vehicle and Non-Vehicle Example")
 
 I tried various combinations of parameters, originally staying with RGB for color space, as in the images I looked at originally before the classifier, the color space did not appear to have a big effect. However, I found I gained over an additional percentage of test accuracy (from just over 97% to ~99%) on my SVC classifier by using the 'YCrCb' color space.
 
@@ -39,9 +39,9 @@ I settled on two for cells_per_step (which affects how much the windows overlap)
 
 As far as scales go, I went with scales larger than the training images had been, which were 64 pixels by 64 pixels. Most of the cars near enough to matter are going to be larger than that, so I went with multiple scales from 1.1 on up to 2.3, spread out by 0.4 each to get some variety. This did a good job of having multiple hits on the actual vehicles, while not having very many overlapping false positives.
 
-My final pipeline searched on four scales using the YCrCb 3-channel HOG features, plus spatially binned color and histograms of color in the feature vector, which provided a sufficient result.  Here are some example images, which are prior to using heatmaps:
+My final pipeline searched on four scales using the YCrCb 3-channel HOG features, plus spatially binned color and histograms of color in the feature vector, which provided a sufficient result.  Here are some example images, which are prior to using heatmaps (and therefore showing multiple false positives):
 
-![alt text][image4]
+![All bounding boxes](./images/all_bounds.PNG "Images with all bounding boxes")
 
 ### Video Implementation
 
@@ -61,15 +61,14 @@ In order to create the heat maps, for each box detected for an image/frame of vi
 
 Here's an example result showing the heatmap from a series of images, the result of 'scipy.ndimage.measurements.label()' and the bounding boxes then overlaid onto the images:
 
-#### Here are six frames and their corresponding heatmaps:
+#### Here are six frames and their corresponding heatmaps, after thresholding:
 
-![alt text][image5]
-
-#### Here is the output of 'scipy.ndimage.measurements.label()' on the integrated heatmap from all six frames:
-![alt text][image6]
+![Original Images](./images/test_images.PNG "Original Images")
+![Heatmaps](./images/heatmaps.PNG "Image Heatmaps")
+Still some false positives in one, but raising the threshold further began to lose the cars more often.
 
 #### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image7]
+![Final product](./images/finished.PNG "Images with the final bounding boxes")
 
 ---
 
