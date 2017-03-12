@@ -85,6 +85,8 @@ My model does still have a few moments where it detects false positives or stops
 
 As seen above, if I want to detect vehicles and lanes at the same time, I could probably retool my functions to either run more in parallel or otherwise not draw the vehicle detections onto the image until already pulling the lane line detection as well. This would prevent the issue late in the combined video where the lane line detection fails.
 
+Another area of potential vast improvement is with regards to speed. My current implementation is much, much slower than real time (taking nearly 50 minutes to produce the 1.5 minute project video). 
+
 Lastly, I think deep learning would be another approach (especially since the training data is of a sufficient size), or potentially using other classifier algorithms to see how they fare compare to a Linear SVC.
 
-Overall though, I think the implementation of vehicle detection is a good start!
+Overall though, I think my implementation for vehicle detection is a good start!
