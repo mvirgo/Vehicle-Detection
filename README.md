@@ -47,7 +47,7 @@ My final pipeline searched on four scales using the YCrCb 3-channel HOG features
 
 ### Video Implementation
 
-My project video file was created using the 'video_function_with_lanes.py' file. Note that it contains both vehicle detection and lane line detection. The first video, specific to this project, was made by commenting out the lane line detection portion.
+My project video file was created using the 'video_function_with_lanes.py' file. Note that it contains both vehicle detection and lane line detection. The first video, specific to this project, was made by commenting out the lane line detection portion. I added in smoothing across frames by adding in a Python Class object (see lines 38-43 in 'full_detection_pipeline.py' for the class and 139-150 for lines containing the implementation of the class). This helps in two ways: 1) removing additional false positives which are not appearing in multiple frames, and 2) smoothing out some of the detected vehicles' boxes. Sometimes my model would spit out mutltiple boxes per a single car, and this helps increase the likelihood they are joined as one for a single vehicle. Note that I used 10 frames to average across - five frames still sometimes had too many false positives, while above ten tended to lag behind the vehicle too much. 
 
 Here's a [link to my video result.](./project_videos/project_vid_output.mp4)
 
@@ -59,7 +59,7 @@ In this [second video](./project_videos/project_vid_output_with_lanes.mp4), I al
 
 The 'heatmap_functions.py' file and Lines 131-159 of 'full_detection_pipeline.py' implement my heat maps.
 
-In order to create the heat maps, for each box detected for an image/frame of video, these these box positions are recorded such that the areas within are given a certain amount of "heat", whereby more "heat" means there were more detections in that spot. After applying a threshold, only certain higher amounts of heat are left to eliminate some of the false positives. I then used 'scipy.ndimage.measurements.label()' to identify individual heat blobs in the heatmap.  From there, the individual heat blobs are assumed to be vehicles, and bounding boxes are made to cover the area of each of these heat blobs.
+In order to create the heat maps, for each box detected for an image/frame of video, these these box positions are recorded such that the areas within are given a certain amount of "heat", whereby more "heat" means there were more detections in that spot. After applying a threshold, only certain higher amounts of heat are left to eliminate some of the false positives. I then used 'scipy.ndimage.measurements.label()' to identify individual heat blobs in the heatmap.  From there, the individual heat blobs are assumed to be vehicles, and bounding boxes are made to cover the area of each of these heat blobs. As mentioned above, these heat maps get averaged across the last ten frames.
 
 Here's an example result showing the heatmap from a series of images, the result of 'scipy.ndimage.measurements.label()' and the bounding boxes then overlaid onto the images:
 
@@ -85,8 +85,6 @@ Along with this, although I was getting up near 97% accuracy with my classifier,
 From there, implementing the additional scales took some re-tooling of my original pipeline. Once I did that, I was then detecting too many vehicles again, even with the improved classifier. Once I went back and raised my heatmap threshold, that problem was solved.
 
 My model would have some interesting results if it was driving down a road with cars parked on either side or on a more open road (whereas the project video has a middle divider blocking the other side). Especially with a lot of parked cars, there could be a gigantic bounding box all along the side of the image.
-
-My model does still have a few moments where it detects false positives or stops detecting a vehicle. An additional implementation I could use is to average the box boundaries over a few images, so a single frame or two with a false positive would go away, vehicles would consistently stay detected frame-to-frame, and even the box boundaries themselves would be a little more consistent.
 
 As seen above, if I want to detect vehicles and lanes at the same time, I could probably retool my functions to either run more in parallel or otherwise not draw the vehicle detections onto the image until already pulling the lane line detection as well. This would prevent the issue late in the combined video where the lane line detection fails.
 
