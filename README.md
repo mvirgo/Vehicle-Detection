@@ -31,7 +31,7 @@ Next, I shuffled and split the data into training and test splits using function
 
 ###Sliding Window Search
 
-My sliding window search is implemented in lines 54-111 in 'full_detection_pipeline.py'. For each scale input (from Line 28 in the same file), it will extract the HOG features from each color channel in the 'YCrCb' color space. Based on the window size input, it will slowly "step" across the image (based on pixels in a cell and the number of those cells in a step), with each window being run through the classifier to determine whether it is predicted as a vehicle or non-vehicle. Note that my implementation also puts in the spatial features and color histogram features along with the HOG features (Lines 100 & 101 of full_detection_pipeline.py).
+My sliding window search is implemented in lines 70-129 in 'full_detection_pipeline.py'. For each scale input (from Line 28 in the same file), it will extract the HOG features from each color channel in the 'YCrCb' color space. Based on the window size input, it will slowly "step" across the image (based on pixels in a cell and the number of those cells in a step), with each window being run through the classifier to determine whether it is predicted as a vehicle or non-vehicle. Note that my implementation also puts in the spatial features and color histogram features along with the HOG features (Lines 117 & 118 of full_detection_pipeline.py).
 
 I set the y-start and y-stop to be '400' and 'None', meaning that a little bit over the top half of the image is not searched, but from there it is searched to the bottom of the image. This is because a car would not be expected to be above the horizon line.
 
@@ -55,7 +55,7 @@ In this [second video](./project_videos/project_vid_output_with_lanes.mp4), I al
 
 ####Heatmaps
 
-The 'heatmap_functions.py' file and Lines 113-129 of 'full_detection_pipeline.py' implement my heat maps.
+The 'heatmap_functions.py' file and Lines 131-159 of 'full_detection_pipeline.py' implement my heat maps.
 
 In order to create the heat maps, for each box detected for an image/frame of video, these these box positions are recorded such that the areas within are given a certain amount of "heat", whereby more "heat" means there were more detections in that spot. After applying a threshold, only certain higher amounts of heat are left to eliminate some of the false positives. I then used 'scipy.ndimage.measurements.label()' to identify individual heat blobs in the heatmap.  From there, the individual heat blobs are assumed to be vehicles, and bounding boxes are made to cover the area of each of these heat blobs.
 
