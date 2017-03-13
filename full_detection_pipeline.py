@@ -27,6 +27,9 @@ X_scaler = classifier_info['X_scaler']
 # Scales to iterate through for window searches
 scale = [1.1, 1.5, 1.9, 2.3]
 
+# Frames to smooth heatmap over
+heat_frames = 5
+
 # The higher this is, the further from the decision boundary it is.
 # Numbers close to zero are not very confident - this is not percentage confidence
 confidence_threshold = 0.3
@@ -132,22 +135,22 @@ def find_cars(img):
 
     # Add heat to each box in box list
     heat = add_heat(heat,boxes)
-    
-    # Apply threshold to help remove false positives
-    heat = apply_threshold(heat,heat_threshold)
 
     # Append new heatmap to recents list
     rec_heat.add_heat(heat)
 
     # Drop oldest frame to have ten total for average
-    if len(rec_heat.heat_list) > 10:
-        rec_heat.heat_list = rec_heat.heat_list[1:11]
+    if len(rec_heat.heat_list) > heat_frames:
+        rec_heat.heat_list = rec_heat.heat_list[1:heat_frames+1]
 
     # Make into array so np.mean will calculate for each value in the image
     recent_heat_array = np.array(rec_heat.heat_list)
         
     # Take the average heat
     avg_heat = np.mean(np.array(recent_heat_array), axis=0)
+    
+    # Apply threshold to help remove false positives
+    avg_heat = apply_threshold(avg_heat,heat_threshold)
 
     # Visualize the heatmap when displaying    
     heatmap = np.clip(avg_heat, 0, 255)
