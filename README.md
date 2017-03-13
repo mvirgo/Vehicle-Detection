@@ -31,23 +31,23 @@ Next, I shuffled and split the data into training and test splits using function
 
 ###Sliding Window Search
 
-My sliding window search is implemented in lines 70-129 in 'full_detection_pipeline.py'. For each scale input (from Line 28 in the same file), it will extract the HOG features from each color channel in the 'YCrCb' color space. Based on the window size input, it will slowly "step" across the image (based on pixels in a cell and the number of those cells in a step), with each window being run through the classifier to determine whether it is predicted as a vehicle or non-vehicle. Note that my implementation also puts in the spatial features and color histogram features along with the HOG features (Lines 117 & 118 of full_detection_pipeline.py).
+My sliding window search is implemented in lines 73-132 in 'full_detection_pipeline.py'. For each scale input (from Line 28 in the same file), it will extract the HOG features from each color channel in the 'YCrCb' color space. Based on the window size input, it will slowly "step" across the image (based on pixels in a cell and the number of those cells in a step), with each window being run through the classifier to determine whether it is predicted as a vehicle or non-vehicle. Note that my implementation also puts in the spatial features and color histogram features along with the HOG features (Lines 120 & 121 of full_detection_pipeline.py).
 
 I set the y-start and y-stop to be '400' and 'None', meaning that a little bit over the top half of the image is not searched, but from there it is searched to the bottom of the image. This is because a car would not be expected to be above the horizon line.
 
 I settled on two for cells_per_step (which affects how much the windows overlap), as going higher tended to cause issues later with my heat map, as the windows were less often on top of each other and therefore not causing my heat map to meet the desired threshold.
 
-I used 'svc.decision_function' in order to narrow down the detections even further (see my "confidence" threshold at line 32 of 'full_detection_pipeline.py' and the implementation within the function at line 122 and the if function on lines 125-129). With that function, the further from the decision boundary a detection is (i.e. farther from zero), the more confident my classifier is that the detection is a car. I chose 0.3 (note that this is not 30% confidence - 0.3 is the distance from the decision boundary) as anything lower rarely removed false positives while anything higher tended to remove too many of my true car detections.
+I used 'svc.decision_function' in order to narrow down the detections even further (see my "confidence" threshold at line 35 of 'full_detection_pipeline.py' and the implementation within the function at line 126 and the if function on lines 128-132). With that function, the further from the decision boundary a detection is (i.e. farther from zero), the more confident my classifier is that the detection is a car. I chose 0.3 (note that this is not 30% confidence - 0.3 is the distance from the decision boundary) as anything lower rarely removed false positives while anything higher tended to remove too many of my true car detections.
 
 As far as scales go, I went with scales larger than the training images had been, which were 64 pixels by 64 pixels. Most of the cars near enough to matter are going to be larger than that, so I went with multiple scales from 1.1 on up to 2.3, spread out by 0.4 each to get some variety. This did a good job of having multiple hits on the actual vehicles, while not having very many overlapping false positives.
 
-My final pipeline searched on four scales using the YCrCb 3-channel HOG features, plus spatially binned color and histograms of color in the feature vector, which provided a sufficient result.  Here are some example images, which are prior to using heatmaps (and therefore showing multiple false positives):
+My final pipeline searched on four scales using the YCrCb 3-channel HOG features, plus spatially binned color and histograms of color in the feature vector, which provided a sufficient result.  Here are some example images, which are prior to using heatmaps (and therefore showing multiple false positives in some cases prior to later removal):
 
 ![All bounding boxes](./images/all_bounds.PNG "Images with all bounding boxes")
 
 ### Video Implementation
 
-My project video file was created using the 'video_function_with_lanes.py' file. Note that it contains both vehicle detection and lane line detection. The first video, specific to this project, was made by commenting out the lane line detection portion. I added in smoothing across frames by adding in a Python Class object (see lines 38-43 in 'full_detection_pipeline.py' for the class and 139-150 for lines containing the implementation of the class). This helps in two ways: 1) removing additional false positives which are not appearing in multiple frames, and 2) smoothing out some of the detected vehicles' boxes. Sometimes my model would spit out mutltiple boxes per a single car, and this helps increase the likelihood they are joined as one for a single vehicle. Note that I used 10 frames to average across - five frames still sometimes had too many false positives, while above ten tended to lag behind the vehicle too much. 
+My project video file was created using the 'video_function_with_lanes.py' file. Note that it contains both vehicle detection and lane line detection. The first video, specific to this project, was made by commenting out the lane line detection portion. I added in smoothing across frames by adding in a Python Class object (see lines 42-46 in 'full_detection_pipeline.py' for the class and 139-150 for lines containing the implementation of the class). This helps in two ways: 1) removing additional false positives which are not appearing in multiple frames, and 2) smoothing out some of the detected vehicles' boxes. Sometimes my model would spit out mutltiple boxes per a single car, and this helps increase the likelihood they are joined as one for a single vehicle. Note that I used 5 frames to average across - below this had too many false positives, while above it tended to lag behind the vehicle too much. 
 
 Here's a [link to my video result.](./project_videos/project_vid_output.mp4)
 
@@ -57,7 +57,7 @@ In this [second video](./project_videos/project_vid_output_with_lanes.mp4), I al
 
 ####Heatmaps
 
-The 'heatmap_functions.py' file and Lines 131-159 of 'full_detection_pipeline.py' implement my heat maps.
+The 'heatmap_functions.py' file and Lines 134-162 of 'full_detection_pipeline.py' implement my heat maps.
 
 In order to create the heat maps, for each box detected for an image/frame of video, these these box positions are recorded such that the areas within are given a certain amount of "heat", whereby more "heat" means there were more detections in that spot. After applying a threshold, only certain higher amounts of heat are left to eliminate some of the false positives. I then used 'scipy.ndimage.measurements.label()' to identify individual heat blobs in the heatmap.  From there, the individual heat blobs are assumed to be vehicles, and bounding boxes are made to cover the area of each of these heat blobs. As mentioned above, these heat maps get averaged across the last ten frames.
 
@@ -67,7 +67,7 @@ Here's an example result showing the heatmap from a series of images, the result
 
 ![Original Images](./images/test_images.PNG "Original Images")
 ![Heatmaps](./images/heatmaps.PNG "Image Heatmaps")
-Still some false positives in one, but raising the threshold further began to lose the cars more often.
+There are no longer any false positives in these example images.
 
 #### Here the resulting bounding boxes are drawn onto the last frame in the series:
 ![Final product](./images/finished.PNG "Images with the final bounding boxes")
