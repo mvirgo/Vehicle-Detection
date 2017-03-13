@@ -37,6 +37,8 @@ I set the y-start and y-stop to be '400' and 'None', meaning that a little bit o
 
 I settled on two for cells_per_step (which affects how much the windows overlap), as going higher tended to cause issues later with my heat map, as the windows were less often on top of each other and therefore not causing my heat map to meet the desired threshold.
 
+I used 'svc.decision_function' in order to narrow down the detections even further (see my "confidence" threshold at line 32 of 'full_detection_pipeline.py' and the implementation within the function at line 122 and the if function on lines 125-129). With that function, the further from the decision boundary a detection is (i.e. farther from zero), the more confident my classifier is that the detection is a car. I chose 0.3 (note that this is not 30% confidence - 0.3 is the distance from the decision boundary) as anything lower rarely removed false positives while anything higher tended to remove too many of my true car detections.
+
 As far as scales go, I went with scales larger than the training images had been, which were 64 pixels by 64 pixels. Most of the cars near enough to matter are going to be larger than that, so I went with multiple scales from 1.1 on up to 2.3, spread out by 0.4 each to get some variety. This did a good job of having multiple hits on the actual vehicles, while not having very many overlapping false positives.
 
 My final pipeline searched on four scales using the YCrCb 3-channel HOG features, plus spatially binned color and histograms of color in the feature vector, which provided a sufficient result.  Here are some example images, which are prior to using heatmaps (and therefore showing multiple false positives):
