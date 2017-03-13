@@ -139,9 +139,9 @@ def find_cars(img):
     # Append new heatmap to recents list
     rec_heat.add_heat(heat)
 
-    # Drop oldest frame to have five total for average
-    if len(rec_heat.heat_list) > 5:
-        rec_heat.heat_list = rec_heat.heat_list[1:6]
+    # Drop oldest frame to have ten total for average
+    if len(rec_heat.heat_list) > 10:
+        rec_heat.heat_list = rec_heat.heat_list[1:11]
 
     # Make into array so np.mean will calculate for each value in the image
     recent_heat_array = np.array(rec_heat.heat_list)
