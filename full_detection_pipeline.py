@@ -27,6 +27,23 @@ X_scaler = classifier_info['X_scaler']
 # Scales to iterate through for window searches
 scale = [1.1, 1.5, 1.9, 2.3]
 
+# The higher this is, the further from the decision boundary it is.
+# Numbers close to zero are not very confident - this is not percentage confidence
+confidence_threshold = 0.3
+
+# Threshold for strength of heat needed to make it to final bounding box
+# Helps remove false positives
+heat_threshold = 2
+
+# Class to average heatmaps over
+class Recent_Heat:
+    def __init__(self):
+        self.heat_list = []
+    def add_heat(self, heat):
+        self.heat_list.append(heat)
+
+rec_heat = Recent_Heat()
+
 def convert_color(img, conv='RGB2YCrCb'):
     """ Adding in a few color conversion possibilities.
     """
@@ -102,9 +119,10 @@ def find_cars(img):
 
                 # Scale features and make a prediction
                 test_features = X_scaler.transform(np.hstack((spatial_features, hist_features, hog_features)).reshape(1, -1))       
+                confidence = svc.decision_function(test_features)
                 test_prediction = svc.predict(test_features)
 
-                if test_prediction == 1:
+                if test_prediction == 1 and abs(confidence) > confidence_threshold:
                     xbox_left = np.int(xleft*num)
                     ytop_draw = np.int(ytop*num)
                     win_draw = np.int(window*num)
@@ -116,11 +134,23 @@ def find_cars(img):
     heat = add_heat(heat,boxes)
     
     # Apply threshold to help remove false positives
-    # Raised to 2 to help remove false positives
-    heat = apply_threshold(heat,2)
+    heat = apply_threshold(heat,heat_threshold)
+
+    # Append new heatmap to recents list
+    rec_heat.add_heat(heat)
+
+    # Drop oldest frame to have five total for average
+    if len(rec_heat.heat_list) > 5:
+        rec_heat.heat_list = rec_heat.heat_list[1:6]
+
+    # Make into array so np.mean will calculate for each value in the image
+    recent_heat_array = np.array(rec_heat.heat_list)
+        
+    # Take the average heat
+    avg_heat = np.mean(np.array(recent_heat_array), axis=0)
 
     # Visualize the heatmap when displaying    
-    heatmap = np.clip(heat, 0, 255)
+    heatmap = np.clip(avg_heat, 0, 255)
 
     # Find final boxes from heatmap using label function
     labels = label(heatmap)
