@@ -8,26 +8,7 @@ mtx = cam_cal_info['mtx']
 dist = cam_cal_info['dist']
 
 # Define a class to receive the characteristics of each line detection
-class Left_Line():
-    def __init__(self):
-        # was the line detected in the last iteration?
-        self.detected = False  
-        # recent polynomial coefficients
-        self.recent_fit = []
-        # polynomial coefficients averaged over the last n iterations
-        self.best_fit = None  
-        # polynomial coefficients for the most recent fit
-        self.current_fit = [np.array([False])]  
-        # difference in fit coefficients between last and new fits
-        self.diffs = np.array([0,0,0], dtype='float') 
-        # x values for detected line pixels
-        self.allx = None  
-        # y values for detected line pixels
-        self.ally = None
-        # counter to reset after 5 iterations if issues arise
-        self.counter = 0
-        
-class Right_Line():
+class Line():
     def __init__(self):
         # was the line detected in the last iteration?
         self.detected = False  
@@ -262,8 +243,8 @@ def second_ord_poly(line, val):
     return formula
 
 # Set the class lines equal to the variables used above
-left_line = Left_Line()
-right_line = Right_Line()
+left_line = Line()
+right_line = Line()
 
 def draw_lines(img):
     """ Draw Lines will first check whether the lines are detected.
