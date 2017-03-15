@@ -1,9 +1,9 @@
 # Vehicle-Detection
-####Detecting Vehicles for Udacity CarND Term 1 Project 5
+#### Detecting Vehicles for Udacity CarND Term 1 Project 5
 
 In this project, I use histograms of oriented gradients (HOGs) and color features, along with a linear support vector machine classifier, in order to detect vehicles in a road video. I use multiple scales of the image classifiers in order to potentially detect vehicles at different distances. To help smooth out multiple detections of the same vehicle and remove false positives, I utilize heat maps to create bounding boxes on the areas with the most detections occuring. 
 
-###Histogram of Oriented Gradients (HOG)
+### Histogram of Oriented Gradients (HOG)
 
 The code for this step is contained in the detect_functions.py file, and the parameters fed into the HOG can be found in the vehicle_classifier.py file, lines 34-45. After training the classifier, I saved the parameters into a pickle file (found at classifier_info.p) to bring into my main pipeline.
 
@@ -29,7 +29,7 @@ Now, onto the training of a classifier. In lines 47-58 of vehicle_classifier.py,
 
 Next, I shuffled and split the data into training and test splits using functions from sklearn. I then used sklearn's LinearSVC (a linear support vector machine classifier) to train my classifier. I saved the classifier, X_scaler, and parameter information to the pickle file 'classifier_info.p' to use in my sliding window search coming up below. This classifier had a test accuracy of 98.99%.
 
-###Sliding Window Search
+### Sliding Window Search
 
 My sliding window search is implemented in lines 73-132 in 'full_detection_pipeline.py'. For each scale input (from Line 28 in the same file), it will extract the HOG features from each color channel in the 'YCrCb' color space. Based on the window size input, it will slowly "step" across the image (based on pixels in a cell and the number of those cells in a step), with each window being run through the classifier to determine whether it is predicted as a vehicle or non-vehicle. Note that my implementation also puts in the spatial features and color histogram features along with the HOG features (Lines 120 & 121 of full_detection_pipeline.py).
 
@@ -55,7 +55,7 @@ This first video is the result of the full detection pipeline, which also utiliz
 
 In this [second video](./project_videos/project_vid_output_with_lanes.mp4), I also added in my lane line detection from my Advanced Lane Lines [project here](https://github.com/mvirgo/Advanced-Lane-Lines). Note that the 'cam_calibration.py' file helps calibrate the camera for this (using chessboard images from Udacity's Advanced Lane Lines repo as listed in that file), for which I saved the necessary undistortion information to the 'cam_cal_info.p' file in this repository. This gets fed into the 'lane_detect.py' file, which is then pulled into the 'video_function_with_lanes.py' file. This second video runs into an interesting issue after running seamlessly to start, where the lane detection fails in the last 15 seconds or so, likely due to my current implementation running the lane detection after the vehicle detection (and the bounding boxes messing with the lane line detection).
 
-####Heatmaps
+#### Heatmaps
 
 The 'heatmap_functions.py' file and Lines 134-162 of 'full_detection_pipeline.py' implement my heat maps.
 
@@ -74,9 +74,9 @@ There are no longer any false positives in these example images.
 
 ---
 
-###Discussion
+### Discussion
 
-####Issues and Potential Improvements
+#### Issues and Potential Improvements
 
 The first issue I ran into with this project was simply learning the best parameters to use, a common area of focus in machine learning. I initially played around mostly with the spatial dimensions and number of histogram bins, which had appeared to have more of an importance in lessons prior to the project but which I found to not have that great of an impact on the final classifier accuracy.
 
